@@ -10,6 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // saveItem
+
 app.post("/saveItem", async (req, res) => {
     let db = await connect("Blic-2");
     let { name, price, brand } = req.body;
@@ -33,6 +34,7 @@ app.post("/saveItem", async (req, res) => {
 
 
 // getBrand
+
 app.get("/getBrand", async (req, res) => {
     let db = await connect("Blic-2");
     let brand = req.query["brand"];
@@ -62,6 +64,27 @@ app.get("/getBrand", async (req, res) => {
     }
 });
 
+//getItemById
+
+app.get("/getItemById", async (req, res) => {
+    let db = await connect("Blic-2");
+    let id = req.query["id"];
+    let query = { _id: mongo.ObjectId(id) };
+    let item = await db.collection("collection").findOne(query);
+    if (item) {
+        res.json({
+            status: "OK",
+            data: {
+                item: item,
+            },
+        });
+    } else {
+        res.json({
+            status: "Failed",
+            message: `Couldn't find item by id ${id}`,
+        });
+    }
+});
 
 
 
