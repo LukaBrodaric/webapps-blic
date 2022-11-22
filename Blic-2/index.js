@@ -36,19 +36,23 @@ app.post("/saveItem", async (req, res) => {
 app.get("/getBrand", async (req, res) => {
     let db = await connect("Blic-2");
     let brand = req.query["brand"];
-    console.log(req.query);
     let query = { brand: brand };
     let cursor = await db.collection("collection").find(query);
     let items = await cursor.toArray();
+    let items_filter = items.map((item) => {
+        return {
+            name: item.name,
+            price: item.price,
+        };
+    });
     if (items) {
         res.json({
             status: "OK",
            
             data: {
                 brand: brand,
-                items: items,
+                items: items_filter,
             },
-            projection: { _id: 0, brand: 0, items: 1 },
         });
     } else {
         res.json({
