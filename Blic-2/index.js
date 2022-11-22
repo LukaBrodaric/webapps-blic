@@ -8,7 +8,8 @@ const port = 2209;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// SAVE ITEM
+
+// saveItem
 app.post("/saveItem", async (req, res) => {
     let db = await connect("Blic-2");
     let { name, price, brand } = req.body;
@@ -29,6 +30,35 @@ app.post("/saveItem", async (req, res) => {
         });
     }
 });
+
+
+// getBrand
+app.get("/getBrand", async (req, res) => {
+    let db = await connect("Blic-2");
+    let brand = req.query["brand"];
+    console.log(req.query);
+    let query = { brand: brand };
+    let cursor = await db.collection("collection").find(query);
+    let items = await cursor.toArray();
+    if (items) {
+        res.json({
+            status: "OK",
+           
+            data: {
+                brand: brand,
+                items: items,
+            },
+            projection: { _id: 0, brand: 0, items: 1 },
+        });
+    } else {
+        res.json({
+            status: "Failed",
+            message: `Brand ${brand} no found in DB`,
+        });
+    }
+});
+
+
 
 
 app.listen(port, () => {
